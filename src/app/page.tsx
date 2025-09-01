@@ -1,103 +1,63 @@
-import Image from "next/image";
+import { Avatar } from "@/components/avatar";
+import { Heading, Subheading } from "@/components/heading";
+import { Select } from "@/components/select";
+import { Stat } from "@/components/stat";
+import { Table, TableRow, TableCell, TableHeader, TableHead, TableBody } from "@/components/table";
+import { getRecentOrders } from "@/data";
 
-export default function Home() {
+export default async function Home() {
+  const recentOrders = await getRecentOrders();
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <>
+      <Heading>Good Afternoon, Erica</Heading>
+      <div className="mt-8 flex items-end justify-between">
+        <Subheading>Overview</Subheading>
+        <div>
+          <Select name="filter">
+            <option value="last-week">Last Week</option>
+            <option value="last-two-weeks">Last Two Weeks</option>
+            <option value="last-month">Last Month</option>
+            <option value="last-quarter">Last Quarter</option>
+          </Select>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+      <div className="mt-4 grid gap-8 sm:grid-cols-2 xl:grid-cols-4">
+        <Stat title="Total Revenue" value="$2.6M" change="+4.5%" changePeriod="last week" />
+        <Stat title="Average Order Value" value="$112" change="-12.5%" changePeriod="last week" />
+        <Stat title="Tickets Sold" value="5,100" change="+100%" changePeriod="last week" />
+        <Stat title="Page Views" value="56,000" change="-2.5%" changePeriod="last week" />
+      </div>
+      <div className="mt-14">
+        <Subheading>Recent Orders</Subheading>
+        <Table className="mt-4 [--gutter:--spacing(6)] lg:[--gutter:--spacing(10)]">
+          <TableHead>
+            <TableRow>
+              {/* Order number	Purchase date	Customer	Event	Amount */}
+              <TableHeader>Order number</TableHeader>
+              <TableHeader>Purchase date</TableHeader>
+              <TableHeader>Customer</TableHeader>
+              <TableHeader>Event</TableHeader>
+              <TableHeader className="text-right">Amount</TableHeader>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {recentOrders.map((order) => (
+              <TableRow key={order.id} href={order.url} title={`Order #${order.id}`}>
+                <TableCell className="font-medium">{order.id}</TableCell>
+                <TableCell className="text-zinc-500">{order.date}</TableCell>
+                <TableCell>{order.customer.name}</TableCell>
+                <TableCell>
+                  <div>
+                    <Avatar className="size-6 mr-2" src={order.event.imgUrl} />
+                    <span>{order.event.name}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right">{order.amount.usd}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   );
 }
